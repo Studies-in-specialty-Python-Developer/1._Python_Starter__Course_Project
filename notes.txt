@@ -1,0 +1,183 @@
+Movie infoset
+['airing', 'akas', 'alternate versions', 'awards', 'connections', 'crazy credits', 'critic reviews', 'episodes',
+'external reviews', 'external sites', 'faqs', 'full credits', 'goofs', 'keywords', 'list', 'locations', 'main',
+'misc sites', 'news', 'official sites', 'parents guide', 'photo sites', 'plot', 'quotes', 'recommendations',
+'release dates', 'release info', 'reviews', 'sound clips', 'soundtrack', 'synopsis', 'taglines', 'technical',
+'trivia', 'tv schedule', 'video clips', 'vote details']
+
+Popular Movies by Genre
+
+Action
+Adventure
+Animation
+Biography
+Comedy
+Crime
+Documentary
+Drama
+Family
+Fantasy
+Film Noir
+History
+Horror
+Music
+Musical
+Mystery
+Romance
+Sci-Fi
+Short Film
+Sport
+Superhero
+Thriller
+War
+Western
+
+import imdb # pip install IMDbPY
+ia = imdb.IMDb()
+movie = ia.get_top50_movies_by_genres('Crime')
+print(movie)
+movie = ia.get_top250_movies()
+print(movie)
+movie = ia.get_popular100_movies()
+
+
+
+
+{'genres': ['acoustic',
+            'afrobeat',
+            'alt-rock',
+            'alternative',
+            'ambient',
+            'anime',
+            'black-metal',
+            'bluegrass',
+            'blues',
+            'bossanova',
+            'brazil',
+            'breakbeat',
+            'british',
+            'cantopop',
+            'chicago-house',
+            'children',
+            'chill',
+            'classical',
+            'club',
+            'comedy',
+            'country',
+            'dance',
+            'dancehall',
+            'death-metal',
+            'deep-house',
+            'detroit-techno',
+            'disco',
+            'disney',
+            'drum-and-bass',
+            'dub',
+            'dubstep',
+            'edm',
+            'electro',
+            'electronic',
+            'emo',
+            'folk',
+            'forro',
+            'french',
+            'funk',
+            'garage',
+            'german',
+            'gospel',
+            'goth',
+            'grindcore',
+            'groove',
+            'grunge',
+            'guitar',
+            'happy',
+            'hard-rock',
+            'hardcore',
+            'hardstyle',
+            'heavy-metal',
+            'hip-hop',
+            'holidays',
+            'honky-tonk',
+            'house',
+            'idm',
+            'indian',
+            'indie',
+            'indie-pop',
+            'industrial',
+            'iranian',
+            'j-dance',
+            'j-idol',
+            'j-pop',
+            'j-rock',
+            'jazz',
+            'k-pop',
+            'kids',
+            'latin',
+            'latino',
+            'malay',
+            'mandopop',
+            'metal',
+            'metal-misc',
+            'metalcore',
+            'minimal-techno',
+            'movies',
+            'mpb',
+            'new-age',
+            'new-release',
+            'opera',
+            'pagode',
+            'party',
+            'philippines-opm',
+            'piano',
+            'pop',
+            'pop-film',
+            'post-dubstep',
+            'power-pop',
+            'progressive-house',
+            'psych-rock',
+            'punk',
+            'punk-rock',
+            'r-n-b',
+            'rainy-day',
+            'reggae',
+            'reggaeton',
+            'road-trip',
+            'rock',
+            'rock-n-roll',
+            'rockabilly',
+            'romance',
+            'sad',
+            'salsa',
+            'samba',
+            'sertanejo',
+            'show-tunes',
+            'singer-songwriter',
+            'ska',
+            'sleep',
+            'songwriter',
+            'soul',
+            'soundtracks',
+            'spanish',
+            'study',
+            'summer',
+            'swedish',
+            'synth-pop',
+            'tango',
+            'techno',
+            'trance',
+            'trip-hop',
+            'turkish',
+            'work-out',
+            'world-music']}
+
+
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
+spotify = spotipy.Spotify(
+    client_credentials_manager=SpotifyClientCredentials(client_id='399e4362e09e44c6820c10b648909702',
+                                                        client_secret='a1670c34630940ffa62a42f8be87415e'))
+results = spotify.search(q='genre:' + 'rock', type='artist')
+results =spotify.recommendation_genre_seeds()
+pprint(results)
+
