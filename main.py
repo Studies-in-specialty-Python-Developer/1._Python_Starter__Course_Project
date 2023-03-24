@@ -12,9 +12,6 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import const
 
 
-# Вместо кучи ифов можно использовать словари
-
-
 def main():
     print_menu('Main menu', menu_txt['Main menu'], 3, 0, 7)
     menu_choice(main_menu_action)
