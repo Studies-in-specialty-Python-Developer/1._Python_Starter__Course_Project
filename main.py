@@ -1,4 +1,3 @@
-import json
 import math
 import os
 import sys
@@ -7,8 +6,8 @@ from prettytable import PrettyTable
 import colorama
 from colorama import Fore, Style  # , Back
 import spotipy
-from pyjokes import pyjokes
 from spotipy.oauth2 import SpotifyClientCredentials
+from pyjokes import pyjokes
 import const
 import conf_const
 
@@ -17,134 +16,127 @@ def main():
     main_menu(0)
 
 
-def print_menu(menu_numb):
-    header: str = ''
-    items: list = []
-    row_count = const.menu_param.get(menu_numb)['row_count']
-    for header, items in menu_txt.get(menu_numb).items():
-        pass
-    column_count = math.ceil(len(items) / row_count)
-    while len(items) < row_count * column_count:
+def print_menu(menu_number: int):
+    param = get_menu_param(menu_number)
+    items = list(all_menu.get(param['header']).keys())
+    column_count = math.ceil(len(items) / param.get('row_count'))
+    while len(items) < param.get('row_count') * column_count:
         items.append('')
-    pt = PrettyTable(border=False, header=False, left_padding_width=const.menu_param.get(menu_numb)['column_padding'])
+    pt = PrettyTable(border=False, header=False, left_padding_width=param['column_padding'])
     for col in range(column_count):
-        pt.add_column(f'Column {col}', items[col * row_count:(col + 1) * row_count], align='l')
+        pt.add_column(f'Column {col}', items[col * param.get('row_count'):(col + 1) * param.get('row_count')],
+                      align='l')
     os.system('cls')
-    print(Fore.BLUE + Style.DIM + f'{" " * const.menu_param[menu_numb]["header_indent"]}{header}')
+    print(Fore.BLUE + Style.DIM + f'{" " * param["header_indent"]}{param["header"]}')
     print(pt)
 
 
-def menu_choice(menu_numb):
+def menu_choice(menu_number: int):
+    actions = list(all_menu.get(get_menu_param(menu_number).get('header')).values())
     correct_choice = False
-    input_str = const.correct_input
+    input_str = const.input_str.get('correct')
     while not correct_choice:
-        if input_str == const.correct_input:
+        if input_str == const.input_str.get('correct'):
             print(input_str, end=' ')
         else:
             print(Fore.RED + Style.DIM + input_str, end=' ')
         choice = input()
-        if choice.isdigit() and int(choice) < len(menu_action.get(menu_numb)):
-            menu_action.get(menu_numb)[int(choice)](int(choice))
-            input_str = const.correct_input
+        if choice.isdigit() and int(choice) < len(actions):
+            action_position = len(actions) - 1 if choice == '0' else int(choice) - 1
+            actions[action_position](int(choice))
+            input_str = const.input_str.get('correct')
         else:
             correct_choice = False
-            input_str = const.incorrect_input
+            input_str = const.input_str.get('incorrect')
 
 
-def main_menu(menu_numb):
-    print_menu(menu_numb)
-    menu_choice(menu_numb)
+def main_menu(menu_number: int):
+    print_menu(menu_number)
+    menu_choice(menu_number)
 
 
-def submenu(menu_numb):
-    print_menu(menu_numb)
-    menu_choice(menu_numb)
-
-
-def menu_add(menu_numb: int, items: list) -> dict:
-    # Нумеруем пункты меню
-    numbering_items = [str(number).rjust(const.menu_param[menu_numb]["num_rjust"]) + '. ' + item
-                       for number, item in enumerate(items)]
-    # Делаем циклическую перестановку пунктов меню вправо на один шаг и добавляем заголовок
-    return {const.menu_param[menu_numb]["header"]: numbering_items[1:] + numbering_items[:1]}
-
-
-def de_numerate(menu_item: str) -> str:
-    return menu_item[menu_item.find('. ') + 2:]
+def submenu(menu_number: int):
+    print_menu(menu_number)
+    menu_choice(menu_number)
 
 
 def get_movie(genre: int):
-    print(genre)
+    print(genre - 1)
 
 
 def get_music(genre: int):
-    genre_txt = de_numerate(list(menu_txt.get(2).values())[0][genre - 1])
-    results = spotify.search(q='genre:' + genre_txt, type='artist').get('artists').get('items')
-    # for item in results:
-    pprint(results)
+    get_music_menu_txt = list(all_menu.get(get_menu_param(2).get('header')).keys())
+    genre_txt = de_numerate_menu_item(get_music_menu_txt[genre - 1])
+    response = spotify.search(q='genre:' + genre_txt, type='artist').get('artists').get('items')
+    result = []
+    for item in response:
+        resume = {'Name': item.get('name')}
+        resume.update({'Genres': ', '.join(item.get('genres'))})
+        resume.update({'Popularity': item.get('popularity')})
+        resume.update({'Followers': item.get('followers').get('total')})
+        resume.update({'URL': item.get('external_urls').get('spotify')})
+        result.append(resume)
+        pprint(resume, sort_dicts=False)
+        print()
 
 
 def get_joke(genre: int):
-    print(pyjokes.get_joke(category=const.pyjokes_genre.get(genre)))
+    print(pyjokes.get_joke(category=const.jokes_genres.get('param')[genre - 1]))
 
 
 def get_play(genre: int):
-    print(genre)
+    print(genre - 1)
+
+
+def add_menu_items(menu_number: int, items_txt: list, handler, last_item_key: str, last_item_handler) -> dict:
+    num_rjust = get_menu_param(menu_number).get('num_rjust')
+    # Нумеруем пункты меню
+    menu_txt = [str(number).rjust(num_rjust) + '. ' + item for number, item in enumerate(items_txt, 1)]
+    # Составляем список с действиями к каждому пункту меню
+    actions = [handler for _ in range(len(menu_txt))]
+    # Создаем словарь с пунктами меню и соответствующими действиями
+    menu_items = dict(zip(menu_txt, actions))
+    # Добавляем последним пункт меню для возврата в главное меню или выхода из программы
+    menu_items[' ' * (num_rjust - 1) + last_item_key] = last_item_handler
+    return menu_items
+
+
+def de_numerate_menu_item(menu_item: str) -> str:
+    return menu_item[menu_item.find('. ') + 2:]
+
+
+def get_menu_param(menu_number: int) -> dict:
+    for item in const.menu_param:
+        if item['number'] == menu_number:
+            return item
 
 
 if __name__ == "__main__":
     # Инициализация модуля colorama
     colorama.init(autoreset=True)
 
-    # Формирование текстов консольного меню в виде списка словарей,
-    # у каждого меню свой номер, список пунктов и параметры
-    # Формирование списка действий консольного меню в виде списка словарей, у каждого списка свой номер
-
-    menu_txt = {}
-    menu_action = {}
-
-    menu_number = 0  # Main menu
-
-    menu_items = ['Exit', 'Recommend the movie by genres', 'Recommend music by genres',
-                  'Tell a joke', 'Play the game']
-    menu_txt[menu_number] = menu_add(menu_number, menu_items)
-    menu_action[menu_number] = {
-        0: sys.exit,  # 0. Exit
-        1: submenu,  # 1. Recommend the movie by genres
-        2: submenu,  # 2. Recommend music by genres
-        3: submenu,  # 3. Tell a joke
-        4: submenu,  # 4. Play the game
-    }
-
-    menu_number = 1  # 1. Recommend the movie by genres
-
-    menu_items = ['Return']
-    menu_txt[menu_number] = menu_add(menu_number, menu_items)
-    menu_action[menu_number] = {i: main_menu if i == 0 else get_movie for i in range(1)}  # 0. Main menu 1-1. get_movie
-
-    menu_number = 2  # 2. Recommend music by genres
-
+    # Получение списка жанров музыки с сайта Spotify.com
     spotify = spotipy.Spotify(
         client_credentials_manager=SpotifyClientCredentials(client_id=conf_const.spotify['client_id'],
                                                             client_secret=conf_const.spotify['client_secret']))
-    menu_items = spotify.recommendation_genre_seeds().get('genres')
-    menu_items.insert(0, 'Return')
-    menu_txt[menu_number] = menu_add(menu_number, menu_items)
-    menu_action[menu_number] = {i: main_menu if i == 0 else get_music for i in range(len(menu_items))}
-    # 0. Main menu 1-125. get_music
+    music_genres = spotify.recommendation_genre_seeds().get('genres')
 
-    menu_number = 3  # 3. Tell a joke
+    # Формирование текстов  и действий пунктов консольного меню в виде списка словарей,
+    # у каждого меню свой номер, название, параметры, список пунктов и список действий
 
-    menu_items = ['Return', 'Neutral geek jokes', 'Chuck Norris geek jokes', 'All jokes']
-    menu_txt[menu_number] = menu_add(menu_number, menu_items)
-    menu_action[menu_number] = {i: main_menu if i == 0 else get_joke for i in range(len(menu_items))}
-    # 0. Main menu 1-3. get_joke
+    all_menu = {get_menu_param(0).get('header'): add_menu_items(0,  # 'Main menu'
+                                                                const.main_menu_items, submenu, '0. Exit', sys.exit),
+                get_menu_param(1).get('header'): add_menu_items(1,  # 'List of movie genres'
+                                                                const.movie_genres, get_movie, '0. Return', main_menu),
+                get_menu_param(2).get('header'): add_menu_items(2,  # 'List of music genres'
+                                                                music_genres, get_music, '0. Return', main_menu),
+                get_menu_param(3).get('header'): add_menu_items(3,  # 'List of joke category'
+                                                                const.jokes_genres.get('menu'), get_joke,
+                                                                '0. Return', main_menu),
+                get_menu_param(4).get('header'): add_menu_items(4,  # 'Play the game'
+                                                                ['Game'], get_play, '0. Return', main_menu)
+                }
 
-    menu_number = 4  # 4. Play the game
+    pprint(all_menu, sort_dicts=False)
 
-    menu_items = ['Return']
-    menu_txt[menu_number] = menu_add(menu_number, menu_items)
-    menu_action[menu_number] = {i: main_menu if i == 0 else get_play for i in range(1)}  # 0. Main menu 1-1. get_play
-    pprint(menu_txt)
-    pprint(menu_action)
     main()
