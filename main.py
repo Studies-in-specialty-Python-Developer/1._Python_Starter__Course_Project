@@ -1,6 +1,7 @@
 import math
 import os
 import sys
+import imdb
 from pprint import pprint
 from prettytable import PrettyTable
 import colorama
@@ -61,7 +62,17 @@ def submenu(menu_number: int):
 
 
 def get_movie(genre: int):
-    print(genre - 1)
+    get_movie_menu_txt = list(all_menu.get(get_menu_param(1).get('header')).keys())
+    genre_txt = de_numerate_menu_item(get_movie_menu_txt[genre - 1])
+    response = imdb.IMDb().get_top50_movies_by_genres(genre_txt)
+    result = []
+    for item in response:
+        movie_id = item.movieID
+        resume = {'Title': str(item)}
+        resume.update({'URL': f'https://www.imdb.com/title/tt{movie_id}/'})
+        result.append(resume)
+        pprint(resume, sort_dicts=False)
+        print()
 
 
 def get_music(genre: int):
@@ -82,6 +93,7 @@ def get_music(genre: int):
 
 def get_joke(genre: int):
     print(pyjokes.get_joke(category=const.jokes_genres.get('param')[genre - 1]))
+    print()
 
 
 def get_play(genre: int):
@@ -121,7 +133,7 @@ if __name__ == "__main__":
                                                             client_secret=conf_const.spotify['client_secret']))
     music_genres = spotify.recommendation_genre_seeds().get('genres')
 
-    # Формирование текстов  и действий пунктов консольного меню в виде списка словарей,
+    # Формирование текстов и действий пунктов консольного меню в виде списка словарей,
     # у каждого меню свой номер, название, параметры, список пунктов и список действий
 
     all_menu = {get_menu_param(0).get('header'): add_menu_items(0,  # 'Main menu'
