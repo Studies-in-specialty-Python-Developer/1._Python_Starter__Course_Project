@@ -32,3 +32,10 @@
                    '0. Return': <function main_menu at 0x000000DD3CF80790>}
  }
 
+
+Структура токена сайта spotify.com в модуле conf_const.py
+
+spotify = {
+    'client_id': ClientID_token,
+    'client_secret': ClientSecret_token
+}

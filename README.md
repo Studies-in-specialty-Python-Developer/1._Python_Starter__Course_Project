@@ -13,3 +13,6 @@
 Вывод меню в колонках реализован с помощью модуля PrettyTable
 Информация о фильмах и музыке получена с помощью API сайтов imdb.con и spotify.com
 Шутки генерируются с помощью модуля pyjoke
+
+### Проект на GitHub
+https://github.com/Studies-in-specialty-Python-Developer/1._Python_Starter__Course_Project.git
