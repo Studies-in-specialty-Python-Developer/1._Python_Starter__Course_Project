@@ -1,0 +1,15 @@
+[[tool.mypy.overrides]]
+module = "imdb"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "spotipy"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "spotipy.oauth2"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "pyjokes"
+ignore_missing_imports = true

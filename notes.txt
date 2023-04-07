@@ -1,11 +1,4 @@
-import imdb # pip install IMDbPY
-ia = imdb.IMDb()
-movie = ia.get_top50_movies_by_genres('Crime')
-print(movie)
-movie = ia.get_top250_movies()
-print(movie)
-movie = ia.get_popular100_movies()
-
+Структура меню:
 
 {'Main menu': {'1. Recommend the movie by genres': <function submenu at 0x000000DD3CF80820>,
                '2. Recommend music by genres': <function submenu at 0x000000DD3CF80820>,
@@ -35,6 +28,7 @@ movie = ia.get_popular100_movies()
                           '126. world-music': <function get_music at 0x000000DD3CF80940>,
                           '  0. Return': <function main_menu at 0x000000DD3CF80790>},
 
- 'Play the game': {'1. Game': <function get_play at 0x000000DD3CF80A60>,
+ 'Play the game': {'1. Guess the country name': <function get_play at 0x000000DD3CF80A60>,
                    '0. Return': <function main_menu at 0x000000DD3CF80790>}
  }
+
