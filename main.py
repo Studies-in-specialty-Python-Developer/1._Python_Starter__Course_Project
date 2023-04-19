@@ -52,9 +52,9 @@ def menu_choice(menu_number: int):
         menu_number: int - номер меню"""
     actions = list(all_menu.get(get_menu_param(menu_number).get('header'), {}).values())
     correct_choice = False
-    input_str = const.input_str.get('correct', '')
+    input_str = const.INPUT_STR.get('correct', '')
     while not correct_choice:
-        if input_str == const.input_str.get('correct'):
+        if input_str == const.INPUT_STR.get('correct'):
             print(input_str, end=' ')
         else:
             print(Fore.RED + Style.DIM + input_str, end=' ')
@@ -62,10 +62,10 @@ def menu_choice(menu_number: int):
         if choice.isdigit() and int(choice) < len(actions):
             action_position = len(actions) - 1 if choice == '0' else int(choice) - 1
             actions[action_position](int(choice))
-            input_str = const.input_str.get('correct', '')
+            input_str = const.INPUT_STR.get('correct', '')
         else:
             correct_choice = False
-            input_str = const.input_str.get('incorrect', '')
+            input_str = const.INPUT_STR.get('incorrect', '')
 
 
 def main_menu(menu_number: int):
@@ -125,7 +125,7 @@ def get_joke(genre: int):
     """ Выводит в консоль шутку на одну из заданных тем
         Arguments:
         genre: int - кодовый номер темы шутки"""
-    print(pyjokes.get_joke(category=const.jokes_genres.get('param', '')[genre - 1]))
+    print(pyjokes.get_joke(category=const.JOKES_GENRES.get('param', '')[genre - 1]))
     print()
 
 
@@ -155,7 +155,7 @@ def get_play(genre: int):
             if wrong_letters:
                 print(Fore.RED + Style.DIM + 'Wrong: ' + ' '.join(wrong_letters))
 
-        gallows = copy.deepcopy(const.gallows_pattern)
+        gallows = copy.deepcopy(const.GALLOWS_PATTERN)
         fake = Faker()
         country_name = str(fake.country())
         while ' ' in country_name:
@@ -169,19 +169,19 @@ def get_play(genre: int):
         while game_on:
             print_gallows()
             correct_choice = False
-            input_str = const.input_str.get('correct_gallows', '')
+            input_str = const.INPUT_STR.get('correct_gallows', '')
             while not correct_choice:
-                if input_str == const.input_str.get('correct_gallows'):
+                if input_str == const.INPUT_STR.get('correct_gallows'):
                     print(input_str, end=' ')
                 else:
                     print(Fore.RED + Style.DIM + input_str, end=' ')
                 choice = input()
                 if all([len(choice) == 1, any([choice.isalpha(), choice == '0'])]):
                     correct_choice = True
-                    input_str = const.input_str.get('correct_gallows', '')
+                    input_str = const.INPUT_STR.get('correct_gallows', '')
                 else:
                     correct_choice = False
-                    input_str = const.input_str.get('incorrect_gallows', '')
+                    input_str = const.INPUT_STR.get('incorrect_gallows', '')
             if choice.lower() in country_name.lower():
                 for number, item in enumerate(country_name.lower()):
                     if item == choice.lower():
@@ -245,7 +245,7 @@ def get_menu_param(menu_number: int) -> dict:
         dict - словарь, содержащий свойства заданного меню из константы "menu_param" модуля "const.py"
         """
     result = {}
-    for item in const.menu_param:
+    for item in const.MENU_PARAM:
         if item['number'] == menu_number:
             result = item
     return result
@@ -263,13 +263,13 @@ if __name__ == "__main__":
     # Пример структуры меню есть в файле notes.txt
 
     all_menu = {get_menu_param(0).get('header'): add_menu_items(0,  # 'Main menu'
-                                                                const.main_menu_items, submenu, '0. Exit', sys.exit),
+                                                                const.MAIN_MENU_ITEMS, submenu, '0. Exit', sys.exit),
                 get_menu_param(1).get('header'): add_menu_items(1,  # 'List of movie genres'
-                                                                const.movie_genres, get_movie, '0. Return', main_menu),
+                                                                const.MOVIE_GENRES, get_movie, '0. Return', main_menu),
                 get_menu_param(2).get('header'): add_menu_items(2,  # 'List of music genres'
                                                                 music_genres, get_music, '0. Return', main_menu),
                 get_menu_param(3).get('header'): add_menu_items(3,  # 'List of joke category'
-                                                                const.jokes_genres.get('menu', []), get_joke,
+                                                                const.JOKES_GENRES.get('menu', []), get_joke,
                                                                 '0. Return', main_menu),
                 get_menu_param(4).get('header'): add_menu_items(4,  # 'Play the game'
                                                                 ['Guess the country name'], get_play, '0. Return',
